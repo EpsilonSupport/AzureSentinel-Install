@@ -3,7 +3,7 @@
 {
         rotate 2
         weekly
-		sizemax 10G
+	sizemax 10G
         missingok
         notifempty
         delaycompress
