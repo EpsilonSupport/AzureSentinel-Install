@@ -8,11 +8,11 @@ New-SmbShare -Name "softwareDistribution" -Path "C:\softwareDistribution\" -Full
 
 #Download batch file --
 write-host "Downloading Azure Sentinel Agent Batch File ..."
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/StaxMclean/SentinelTest/master/Install-AzureSentinel.bat" -outfile "C:\softwareDistribution\AzureSentinelAgent\Install-AzureSentinel.bat"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/EpsilonSupport/SentinelTest/master/Install-AzureSentinel.bat" -outfile "C:\softwareDistribution\AzureSentinelAgent\Install-AzureSentinel.bat"
 
 #Download zip file --
 write-host "Downloading Azure Sentinel Agent Setup files ..."
-Invoke-WebRequest -Uri "https://github.com/StaxMclean/SentinelTest/releases/download/v1.0/AzureSentinelAgentSetup.zip" -outfile "C:\softwareDistribution\AzureSentinelAgent\AzureSentinelAgentSetup.zip"
+Invoke-WebRequest -Uri "https://github.com/EpsilonSupport/SentinelTest/releases/download/v1.0/AzureSentinelAgentSetup.zip" -outfile "C:\softwareDistribution\AzureSentinelAgent\AzureSentinelAgentSetup.zip"
 
 #EXTRACT AzureSentinelAgentSetup.zip -- 
 write-host "Extracting ZIP to C:\softwareDistribution\AzureSentinelAgent\Setup ..."
