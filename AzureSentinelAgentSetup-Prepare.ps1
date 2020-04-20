@@ -13,7 +13,7 @@ try {
   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 }
 catch {
-  WriteWarning $Error[0]
+  Write-Warning $Error[0]
 }
 
 #create the directory --
@@ -22,7 +22,7 @@ try {
   new-item -itemtype "directory" -path "C:\softwareDistribution\AzureSentinelAgent\Setup"
 }
 catch {
-  WriteWarning $Error[0]
+  Write-Warning $Error[0]
 }
 
 #share the directory --
@@ -31,7 +31,7 @@ try {
   New-SmbShare -Name "softwareDistribution" -Path "C:\softwareDistribution\" -FullAccess "everyone"
 }
 catch {
-  WriteWarning $Error[0]
+  Write-Warning $Error[0]
 }
 
 #Download batch file --
@@ -40,7 +40,7 @@ try {
   Invoke-WebRequest -Uri "https://raw.githubusercontent.com/EpsilonSupport/SentinelTest/master/Install-AzureSentinel.bat" -outfile "C:\softwareDistribution\AzureSentinelAgent\Install-AzureSentinel.bat"
 }
 catch {
-  WriteWarning $Error[0]
+  Write-Warning $Error[0]
 }
 
 #Download zip file --
@@ -49,7 +49,7 @@ try {
   Invoke-WebRequest -Uri "https://github.com/EpsilonSupport/SentinelTest/releases/download/v1.1/AzureSentinelAgentSetup.zip" -outfile "C:\softwareDistribution\AzureSentinelAgent\AzureSentinelAgentSetup.zip"
 }
 catch {
-  WriteWarning $Error[0]
+  Write-Warning $Error[0]
 }
 
 #EXTRACT AzureSentinelAgentSetup.zip -- 
@@ -58,7 +58,7 @@ try {
   Expand-Archive -LiteralPath "C:\softwareDistribution\AzureSentinelAgent\AzureSentinelAgentSetup.zip" -DestinationPath "C:\softwareDistribution\AzureSentinelAgent\Setup"
 }
 catch {
-  WriteWarning $Error[0]
+  Write-Warning $Error[0]
 }
 
 #Mounting Drive --
@@ -67,7 +67,7 @@ try {
   net use X: \\$serverName\softwareDistribution\AzureSentinelAgent
 }
 catch {
-  WriteWarning $Error[0]
+  Write-Warning $Error[0]
 }
 
 #Installing Agent --
@@ -76,7 +76,7 @@ try {
   X:\Install-AzureSentinel.bat $id $key
 }
 catch {
-  WriteWarning $Error[0]
+  Write-Warning $Error[0]
 }
 
 #Unmounting Drive
@@ -85,5 +85,5 @@ try {
   net use x: /d
 }
 catch {
-  WriteWarning $Error[0]
+  Write-Warning $Error[0]
 }
