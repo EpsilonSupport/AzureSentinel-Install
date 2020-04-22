@@ -1,8 +1,9 @@
 #Get Variables --
 $currentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
-$creds=Get-Credential -Message "Enter domain admin credentials in the form NETBIOS/USERNAME" -Username $currentUser
-$user=$creds.UserName
-$pass=[System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($creds.Password))
+#$creds=Get-Credential -Message "Enter domain admin credentials in the form NETBIOS/USERNAME" -Username $currentUser
+$creds=Read-Host -Prompt "Enter your Domain Admin password" -AsSecureString
+#$user=$creds.UserName
+$pass=[System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($creds))
 $serverName=(Get-WmiObject Win32_ComputerSystem).Name
 $serverList=@(((Read-host -Prompt 'Enter names of all other servers to install agent to (comma separated)').Split(",")).Trim())
 $id=Read-Host -Prompt 'Azure Sentinel Workspace ID'
@@ -11,7 +12,7 @@ $key=Read-Host -Prompt 'Azure Sentinel Workspace ID Key'
 
 
 #Enable TLS1.2 --
-write-host "Enabling TLS 1.2 ..."
+write-host "Enabling TLS 1.2 ..." -ForegroundColor Magenta
 try {
   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 }
@@ -20,7 +21,7 @@ catch {
 }
 
 #create the directory --
-write-host "Creating Software Distribution directory ..."
+write-host "Creating Software Distribution directory ..." -ForegroundColor Magenta
 try {
   new-item -itemtype "directory" -path "C:\softwareDistribution\AzureSentinelAgent\Setup" -ErrorAction Stop
 }
@@ -29,7 +30,7 @@ catch {
 }
 
 #share the directory --
-write-host "Sharing Software Distribution directory ..."
+write-host "Sharing Software Distribution directory ..." -ForegroundColor Magenta
 try {
   New-SmbShare -Name "softwareDistribution" -Path "C:\softwareDistribution\" -FullAccess "everyone" -ErrorAction Stop
 }
@@ -38,7 +39,7 @@ catch {
 }
 
 #Download batch file --
-write-host "Downloading Azure Sentinel Agent Batch File ..."
+write-host "Downloading Azure Sentinel Agent Batch File ..." -ForegroundColor Magenta
 try {
   Invoke-WebRequest -Uri "https://raw.githubusercontent.com/EpsilonSupport/SentinelTest/master/Install-AzureSentinel.bat" -outfile "C:\softwareDistribution\AzureSentinelAgent\Install-AzureSentinel.bat" -ErrorAction Stop
 }
@@ -47,7 +48,7 @@ catch {
 }
 
 #Download zip file --
-write-host "Downloading Azure Sentinel Agent Setup files ..."
+write-host "Downloading Azure Sentinel Agent Setup files ..." -ForegroundColor Magenta
 try {
   Invoke-WebRequest -Uri "https://github.com/EpsilonSupport/SentinelTest/releases/download/v1.1/AzureSentinelAgentSetup.zip" -outfile "C:\softwareDistribution\AzureSentinelAgent\AzureSentinelAgentSetup.zip" -ErrorAction Stop
 }
@@ -56,7 +57,7 @@ catch {
 }
 
 #EXTRACT AzureSentinelAgentSetup.zip -- 
-write-host "Extracting ZIP to C:\softwareDistribution\AzureSentinelAgent\Setup ..."
+write-host "Extracting ZIP to C:\softwareDistribution\AzureSentinelAgent\Setup ..." -ForegroundColor Magenta
 try {
   Expand-Archive -LiteralPath "C:\softwareDistribution\AzureSentinelAgent\AzureSentinelAgentSetup.zip" -DestinationPath "C:\softwareDistribution\AzureSentinelAgent\Setup" -ErrorAction Stop
 }
@@ -65,7 +66,7 @@ catch {
 }
 
 #Mounting Drive --
-write-host "Mounting Drive ..."
+write-host "Mounting Drive ..." -ForegroundColor Magenta
 try {
   net use X: \\$serverName\softwareDistribution\AzureSentinelAgent
 }
@@ -74,7 +75,7 @@ catch {
 }
 
 #Installing Agent --
-write-host "Installing Agent ..."
+write-host "Installing Agent ..." -ForegroundColor Magenta
 try {
   X:\Install-AzureSentinel.bat $id $key
 }
@@ -83,7 +84,7 @@ catch {
 }
 
 #Unmounting Drive
-write-host "Unmounting Drive ..."
+write-host "Unmounting Drive ..." -ForegroundColor Magenta
 try {
   net use x: /d
 }
@@ -92,17 +93,17 @@ catch {
 }
 
 #Install to other servers
-write-host "Installing Agent to servers in list provided..."
+write-host "Installing Agent to servers in list provided..." -ForegroundColor Magenta
 try {
   foreach($server in $serverList){
-    Write-Host "Starting install process on"$server;
+    Write-Host "Starting install process on"$server; -ForegroundColor Magenta
     try {
         Invoke-Command -ComputerName $server -ScriptBlock {
-            Write-Host "Mounting Drive on"$using:server;
-            & net use X: \\$using:serverName\softwareDistribution\AzureSentinelAgent /user:$using:user $using:pass
-            Write-Host "Installing Agent on"$using:server;
+            Write-Host "Mounting Drive on"$using:server; -ForegroundColor Magenta
+            & net use X: \\$using:serverName\softwareDistribution\AzureSentinelAgent /user:$using:currentUser $using:pass
+            Write-Host "Installing Agent on"$using:server; -ForegroundColor Magenta
             & X:\Install-AzureSentinel.bat $using:id $using:key;
-            Write-Host "Unmounting Drive on"$using:server;
+            Write-Host "Unmounting Drive on"$using:server; -ForegroundColor Magenta
             & net use X: /d
         }
     }
