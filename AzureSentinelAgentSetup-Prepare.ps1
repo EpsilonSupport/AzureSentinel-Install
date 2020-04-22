@@ -96,14 +96,14 @@ catch {
 write-host "Installing Agent to servers in list provided..." -ForegroundColor Magenta
 try {
   foreach($server in $serverList){
-    Write-Host "Starting install process on"$server; -ForegroundColor Magenta
+    Write-Host "Starting install process on"$server -ForegroundColor Magenta;
     try {
         Invoke-Command -ComputerName $server -ScriptBlock {
-            Write-Host "Mounting Drive on"$using:server; -ForegroundColor Magenta
+            Write-Host "Mounting Drive on"$using:server -ForegroundColor Magenta;
             & net use X: \\$using:serverName\softwareDistribution\AzureSentinelAgent /user:$using:currentUser $using:pass
-            Write-Host "Installing Agent on"$using:server; -ForegroundColor Magenta
+            Write-Host "Installing Agent on"$using:server -ForegroundColor Magenta;
             & X:\Install-AzureSentinel.bat $using:id $using:key;
-            Write-Host "Unmounting Drive on"$using:server; -ForegroundColor Magenta
+            Write-Host "Unmounting Drive on"$using:server -ForegroundColor Magenta;
             & net use X: /d
         }
     }
