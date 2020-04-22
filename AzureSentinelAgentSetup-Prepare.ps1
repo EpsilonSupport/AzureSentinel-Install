@@ -1,4 +1,5 @@
 #Get Variables --
+$creds=Get-Credential -Message "Enter domain admin credentials in the form NETBIOS/USERNAME" -User "NETBIOS\USERNAME"
 $serverName=Read-Host -Prompt 'Name of server you are on'
 $serverList=@(((Read-host -Prompt 'Enter names of all other servers to install agent to (comma separated)').Split(",")).Trim())
 $domain=Read-Host -Prompt 'NetBIOS'
@@ -92,7 +93,7 @@ catch {
 
 #Install to other servers
 try {
-  foreach($server in $serverList){Invoke-Command -ComputerName $server -ScriptBlock {& net use X: \\$using:serverName\softwareDistribution\AzureSentinelAgent /user:$using:domain\$using:user $using:pass;& X:\Install-AzureSentinel.bat $using:id $using:key;& net use X: /d}}
+  foreach($server in $serverList){Invoke-Command -ComputerName $server -ScriptBlock {& net use X: \\$using:serverName\softwareDistribution\AzureSentinelAgent /user:$using:creds.UserName $using:creds.Password;& X:\Install-AzureSentinel.bat $using:id $using:key;& net use X: /d}}
 }
 catch {
   Write-Warning $Error[0].exception.message
