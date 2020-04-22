@@ -50,7 +50,17 @@ catch {
 #Download zip file --
 write-host "Downloading Azure Sentinel Agent Setup files ..." -ForegroundColor Magenta
 try {
-  Invoke-WebRequest -Uri "https://github.com/EpsilonSupport/SentinelTest/releases/download/v1.1/AzureSentinelAgentSetup.zip" -outfile "C:\softwareDistribution\AzureSentinelAgent\AzureSentinelAgentSetup.zip" -ErrorAction Stop
+  If(Test-Path -LiteralPath 'C:\softwareDistribution\AzureSentinelAgent\AzureSentinelAgentSetup.zip'){
+    write-host "Already downloaded..." -ForegroundColor Magenta
+  }
+  Else {
+    try {
+      Invoke-WebRequest -Uri "https://github.com/EpsilonSupport/SentinelTest/releases/download/v1.1/AzureSentinelAgentSetup.zip" -outfile "C:\softwareDistribution\AzureSentinelAgent\AzureSentinelAgentSetup.zip" -ErrorAction Stop
+    }
+    catch {
+      Write-Warning $Error[0].exception.message
+    }
+  }
 }
 catch {
   Write-Warning $Error[0].exception.message
@@ -59,7 +69,16 @@ catch {
 #EXTRACT AzureSentinelAgentSetup.zip -- 
 write-host "Extracting ZIP to C:\softwareDistribution\AzureSentinelAgent\Setup ..." -ForegroundColor Magenta
 try {
-  Expand-Archive -LiteralPath "C:\softwareDistribution\AzureSentinelAgent\AzureSentinelAgentSetup.zip" -DestinationPath "C:\softwareDistribution\AzureSentinelAgent\Setup" -ErrorAction Stop
+  if (Get-Command Expand-Archive -errorAction SilentlyContinue){
+    try {
+      Expand-Archive -LiteralPath "C:\softwareDistribution\AzureSentinelAgent\AzureSentinelAgentSetup.zip" -DestinationPath "C:\softwareDistribution\AzureSentinelAgent\Setup" -ErrorAction Stop
+    }
+    catch {
+      Write-Warning $Error[0].exception.message
+    }
+  }
+  else {
+    write-warning "Expand-Archive cmdlet not available - please manually unzip AzureSentinelAgentSetup.zip to C:\softwareDistribution\AzureSentinelAgent\Setup and re-run this script."
 }
 catch {
   Write-Warning $Error[0].exception.message
