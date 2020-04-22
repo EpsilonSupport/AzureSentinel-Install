@@ -83,7 +83,8 @@ try {
     }
     else {
       write-warning "Expand-Archive cmdlet not available - please manually unzip AzureSentinelAgentSetup.zip to C:\softwareDistribution\AzureSentinelAgent\Setup and re-run this script."
-    }  
+    }
+  }
 }
 catch {
   Write-Warning $Error[0].exception.message
