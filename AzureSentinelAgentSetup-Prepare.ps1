@@ -1,10 +1,10 @@
 #Get Variables --
-$creds=Get-Credential -Message "Enter domain admin credentials in the form NETBIOS/USERNAME" -User "NETBIOS\USERNAME"
-$serverName=Read-Host -Prompt 'Name of server you are on'
+$currentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
+$creds=Get-Credential -Message "Enter domain admin credentials in the form NETBIOS/USERNAME" -Username $currentUser
+$user=$creds.UserName
+$pass=[System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($creds.Password))
+$serverName=(Get-WmiObject Win32_ComputerSystem).Name
 $serverList=@(((Read-host -Prompt 'Enter names of all other servers to install agent to (comma separated)').Split(",")).Trim())
-$domain=Read-Host -Prompt 'NetBIOS'
-$user=Read-Host -Prompt 'Domain Admin user name'
-$pass=Read-Host -Prompt 'Domain Admin password'
 $id=Read-Host -Prompt 'Azure Sentinel Workspace ID'
 $key=Read-Host -Prompt 'Azure Sentinel Workspace ID Key'
 
@@ -92,8 +92,24 @@ catch {
 }
 
 #Install to other servers
+write-host "Installing Agent to servers in list provided..."
 try {
-  foreach($server in $serverList){Invoke-Command -ComputerName $server -ScriptBlock {& net use X: \\$using:serverName\softwareDistribution\AzureSentinelAgent /user:$using:creds.UserName $using:creds.Password;& X:\Install-AzureSentinel.bat $using:id $using:key;& net use X: /d}}
+  foreach($server in $serverList){
+    Write-Host "Starting install process on"$server;
+    try {
+        Invoke-Command -ComputerName $server -ScriptBlock {
+            Write-Host "Mounting Drive on"$using:server;
+            & net use X: \\$using:serverName\softwareDistribution\AzureSentinelAgent /user:$using:user $using:pass
+            Write-Host "Installing Agent on"$using:server;
+            & X:\Install-AzureSentinel.bat $using:id $using:key;
+            Write-Host "Unmounting Drive on"$using:server;
+            & net use X: /d
+        }
+    }
+    catch {
+        Write-Warning $Error[0].exception.message    
+    }
+  }
 }
 catch {
   Write-Warning $Error[0].exception.message
