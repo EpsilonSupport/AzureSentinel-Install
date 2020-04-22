@@ -93,7 +93,7 @@ catch {
 }
 
 #Install to other servers
-write-host "Installing Agent to servers in list provided..." -ForegroundColor Magenta
+write-host "Installing Agent to servers in list provided..." -ForegroundColor DarkYellow
 try {
   foreach($server in $serverList){
     Write-Host "Starting install process on"$server -ForegroundColor Magenta;
