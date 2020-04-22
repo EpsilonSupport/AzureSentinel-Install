@@ -69,17 +69,21 @@ catch {
 #EXTRACT AzureSentinelAgentSetup.zip -- 
 write-host "Extracting ZIP to C:\softwareDistribution\AzureSentinelAgent\Setup ..." -ForegroundColor Magenta
 try {
-  if (Get-Command Expand-Archive -errorAction SilentlyContinue){
-    try {
-      Expand-Archive -LiteralPath "C:\softwareDistribution\AzureSentinelAgent\AzureSentinelAgentSetup.zip" -DestinationPath "C:\softwareDistribution\AzureSentinelAgent\Setup" -ErrorAction Stop
-    }
-    catch {
-      Write-Warning $Error[0].exception.message
-    }
+  If(Test-Path -LiteralPath 'C:\softwareDistribution\AzureSentinelAgent\Setup\setup.exe'){
+    write-host "Already Unzipped..." -ForegroundColor Magenta
   }
   else {
-    write-warning "Expand-Archive cmdlet not available - please manually unzip AzureSentinelAgentSetup.zip to C:\softwareDistribution\AzureSentinelAgent\Setup and re-run this script."
-  }  
+    if (Get-Command Expand-Archive -errorAction SilentlyContinue){
+      try {
+        Expand-Archive -LiteralPath "C:\softwareDistribution\AzureSentinelAgent\AzureSentinelAgentSetup.zip" -DestinationPath "C:\softwareDistribution\AzureSentinelAgent\Setup" -ErrorAction Stop
+      }
+      catch {
+        Write-Warning $Error[0].exception.message
+      }
+    }
+    else {
+      write-warning "Expand-Archive cmdlet not available - please manually unzip AzureSentinelAgentSetup.zip to C:\softwareDistribution\AzureSentinelAgent\Setup and re-run this script."
+    }  
 }
 catch {
   Write-Warning $Error[0].exception.message
