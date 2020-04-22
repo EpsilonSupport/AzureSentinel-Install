@@ -7,9 +7,7 @@ $pass=[System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.
 $serverName=(Get-WmiObject Win32_ComputerSystem).Name
 $serverList=@(((Read-host -Prompt 'Enter names of all other servers to install agent to (comma separated)').Split(",")).Trim())
 $id=Read-Host -Prompt 'Azure Sentinel Workspace ID'
-Write-Host "Azure Sentinel Workspace ID Key:"
-[string] $key = Read-Host
-#$key=Read-Host -Prompt 'Azure Sentinel Workspace ID Key'
+$key=Read-Host -Prompt 'Azure Sentinel Workspace ID Key (PLACE IN DOUBLE QUOTES)'
 
 
 
