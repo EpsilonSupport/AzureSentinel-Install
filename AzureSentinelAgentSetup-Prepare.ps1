@@ -93,10 +93,10 @@ catch {
 }
 
 #Install to other servers
-write-host "Installing Agent to servers in list provided..." -ForegroundColor DarkYellow
+write-host "Installing Agent to servers in list provided..." -ForegroundColor Cyan
 try {
   foreach($server in $serverList){
-    Write-Host "Starting install process on"$server -ForegroundColor Magenta;
+    Write-Host "Starting install process on"$server -ForegroundColor Green;
     try {
         Invoke-Command -ComputerName $server -ScriptBlock {
             Write-Host "Mounting Drive on"$using:server -ForegroundColor Magenta;
