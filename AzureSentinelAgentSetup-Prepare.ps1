@@ -1,10 +1,12 @@
 #Get Variables --
 $serverName=Read-Host -Prompt 'Name of server you are on'
+$serverList=@(((Read-host -Prompt 'Enter names of all other servers to install agent to (comma separated)').Split(",")).Trim())
 $domain=Read-Host -Prompt 'NetBIOS'
 $user=Read-Host -Prompt 'Domain Admin user name'
 $pass=Read-Host -Prompt 'Domain Admin password'
 $id=Read-Host -Prompt 'Azure Sentinel Workspace ID'
 $key=Read-Host -Prompt 'Azure Sentinel Workspace ID Key'
+
 
 
 #Enable TLS1.2 --
@@ -87,3 +89,12 @@ try {
 catch {
   Write-Warning $Error[0].exception.message
 }
+
+#Install to other servers
+try {
+  foreach($server in $serverList){Enter-PSSession -ComputerName $server;net use X: \\$serverName\softwareDistribution\AzureSentinelAgent /user:$domain\$user $pass;X:\Install-AzureSentinel.bat $id $key;net use X: /d;exit}
+}
+catch {
+  Write-Warning $Error[0].exception.message
+}
+
