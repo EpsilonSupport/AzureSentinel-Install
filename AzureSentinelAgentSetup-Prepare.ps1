@@ -92,7 +92,7 @@ catch {
 
 #Install to other servers
 try {
-  foreach($server in $serverList){Invoke-Command -ScriptBlock {net use X: \\$serverName\softwareDistribution\AzureSentinelAgent /user:$domain\$user $pass;X:\Install-AzureSentinel.bat $id $key;net use X: /d} -ComputerName $server} -ErrorAction Stop
+  foreach($server in $serverList){Invoke-Command -ComputerName $server -ScriptBlock {& net use X: \\$using:serverName\softwareDistribution\AzureSentinelAgent /user:$using:domain\$using:user $using:pass;& X:\Install-AzureSentinel.bat $using:id $using:key;& net use X: /d}}
 }
 catch {
   Write-Warning $Error[0].exception.message
